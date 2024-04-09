@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Simple Calculator</h1>
+    <form id="simpleForm">
+        <input type="number" id="num1" placeholder="Enter first number" required>
+        <select id="operation">
+            <option value="add">+</option>
+            <option value="subtract">-</option>
+            <option value="multiply">*</option>
+            <option value="divide">/</option>
+            <option value="power">^</option>
+        </select>
+        <input type="number" id="num2" placeholder="Enter second number" required>
+        <button type="button" onclick="calculateSimple()">Calculate</button>
+        <output><span id="result"></span></output>
+    </form>
+
+    <h1>Complex Calculator</h1>
+    <form id="complexForm">
+        <input type="text" id="expression" placeholder="Enter expression (e.g., 5 + 3 * 2)" required>
+        <button type="button" onclick="calculateComplex()">Calculate</button>
+        <output><span id="result_complex"></span></output>
+    </form>
+
+    <script>
+        function calculateSimple() {
+            const num1 = $('#num1').val();
+            const num2 = $('#num2').val();
+            const operation = $('#operation').val();
+
+            $.ajax({
+                url: '/calculate',
+                type: 'POST',
+                data: {
+                    num1: num1,
+                    num2: num2,
+                    operation: operation
+                },
+                success: function(response) {
+                    const result = response.result;
+                    const color = response.color;
+                    $('#result').html(`<span style="color: ${color};">${result}</span>`);
+                },
+                error: function(error) {
+                    const errorText = error.responseJSON ? error.responseJSON.error : 'An error occurred'; 
+                    $('#result').text(errorText);
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        function calculateComplex() {
+            const expression = $('#expression').val();
+
+            $.ajax({
+                url: '/complex_calculate',
+                type: 'POST',
+                data: {
+                    expression: expression
+                },
+                success: function(response) {
+                    const result = response.result;
+                    const color = response.color;
+                    $('#result_complex').html(`<span style="color: ${color};">${result}</span>`);
+                },
+                error: function(error) {
+                    const errorText = error.responseJSON ? error.responseJSON.error : 'An error occurred'; 
+                    $('#result_complex').text(errorText);
+                    console.error('Error:', error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
